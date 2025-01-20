@@ -1,0 +1,27 @@
+\documentclass{article}
+
+\usepackage[a4paper, left=20mm, right=20mm, top=25mm, bottom=25mm]{geometry}
+\usepackage{fancyhdr}
+\usepackage{listings}
+
+\pagestyle{fancy}
+
+\fancyhead[l] {
+	Piotr K. Wyrwas
+}
+
+\fancyhead[r] {
+	Monday, January 20\textsuperscript{th}
+}
+
+\fancyhead[c] {
+	\textsc{CI/CD Pipeline}
+}
+
+\lstset{numbers=left, numberstyle=\small, numbersep=8pt, frame = single}
+
+\begin{document}
+	\input{pages/intro}
+	\input{pages/docker}
+	\input{pages/gitea}
+\end{document}

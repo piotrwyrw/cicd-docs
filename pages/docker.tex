@@ -1,0 +1,52 @@
+\section{Docker Components}
+The pipeline consists of the following components, each one of which is running in
+a designated docker container:
+\begin{enumerate}
+	\item Gitea
+	\item PostgreSQL \textit{(Part of Gitea)}
+	\item Jenkins
+	\item Reposilite
+\end{enumerate}
+All of these components are instantiated form a single docker compose file.
+Every component is connected to the same network ('\verb|cicd|').
+\subsection{Jenkins}
+Although the setup for the Jenkins container is not particularly sophisticated,
+is is the most complex one of the bunch.
+Since the container needs to access the Docker engine of the host machine,
+it requires both the Docker socket, as well as a docker client to be avilable.
+The former is solved by mounting the Unix socket as usual:
+\begin{lstlisting}
+volumes:
+    ...
+    - /var/run/docker.sock:/var/run/docker.sock
+\end{lstlisting}
+To approach the latter, I opted to build a custom Jenkins image that derives from the
+original \verb|jenkins/jenkins|, whilst including the docker client from the
+\verb|docker:dind| image. The aforementioned concept maps into the following Dockerfile:
+\begin{lstlisting}
+FROM jenkins/jenkins
+USER root
+
+# Grab only the docker client from the DinD image
+COPY --from=docker:dind /usr/local/bin/docker /usr/local/bin/
+
+USER jenkins
+\end{lstlisting}
+Said image is then built and used as the container image for the Jenkins service, i.e.:
+\begin{lstlisting}
+docker build . -t jenkins-with-docker
+\end{lstlisting}
+\begin{lstlisting}
+...
+jenkins:
+    container_name: cicd-jenkins
+    networks:
+        - cicd
+    image: jenkins-with-docker
+    privileged: true
+    ...
+\end{lstlisting}
+Also note that the Jenkins container is created as a \textbf{privileged} container.
+This is to allow the container to use the mounted socket for communicating with the
+host device.
+
