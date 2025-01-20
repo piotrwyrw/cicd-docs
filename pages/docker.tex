@@ -49,4 +49,12 @@ jenkins:
 Also note that the Jenkins container is created as a \textbf{privileged} container.
 This is to allow the container to use the mounted socket for communicating with the
 host device.
-
+\subsection{Reposilite}
+Contrary to the former, \textbf{Reposilite} did not require any amount of problem-solving
+during its setup. It is, however, worth mentioning, that the following environment variable
+was set:
+\begin{lstlisting}
+environment:
+    - REPOSILITE_OPTS=--token admin:secret
+\end{lstlisting}
+This creates a user \verb|admin|, with the password \verb|secret|.
